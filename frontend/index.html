@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Password Strength Analyzer</title>
+    <meta
+      name="description"
+      content="Analyze the strength of your password with real-time feedback, policy checks, entropy scoring, and actionable suggestions."
+    />
+
+    <!-- Google Fonts — Inter for body, JetBrains Mono for password field -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- Main stylesheet — loaded before content to prevent FOUC -->
+    <link rel="stylesheet" href="style.css" />
+  </head>
+
+  <body>
+
+    <!--
+      ============================================================
+      PAGE WRAPPER
+      ============================================================
+      Outer wrapper provides the full-viewport background with the
+      subtle grid / dot pattern applied via CSS pseudo-element.
+    -->
+    <div class="page-wrapper">
+
+      <!--
+        ============================================================
+        MAIN CARD
+        ============================================================
+        Single centered card that holds the entire application UI.
+        Max-width caps at 560px; fills width on mobile.
+      -->
+      <main class="card" id="main-content">
+
+        <!-- ── Header ─────────────────────────────────────────── -->
+        <header class="card-header">
+          <div class="header-icon" aria-hidden="true">
+            <img src="security_icon.jpg" alt="Security Shield" class="app-header-logo" />
+          </div>
+          <div class="header-text">
+            <!-- One h1 per page — SEO requirement -->
+            <h1 class="app-title">Password Strength Analyzer</h1>
+            <p class="app-subtitle">Check how secure your password really is.</p>
+          </div>
+          <span class="header-badge" aria-label="Security tool">SECURE</span>
+        </header>
+
+        <!-- ── Divider ────────────────────────────────────────── -->
+        <hr class="divider" />
+
+        <!-- ── Input Form ─────────────────────────────────────── -->
+        <!--
+          MODULE 1 / UI REDESIGN: PASSWORD INPUT FORM
+          - The form is submitted programmatically via fetch() in script.js.
+          - type="password" masks characters by default.
+          - Show/hide toggle is a <button type="button"> outside the submit flow.
+          - novalidate disables native browser validation popups.
+        -->
+        <form class="analyzer-form" id="analyzer-form" novalidate>
+
+          <!-- Label — linked via for/id for accessibility -->
+          <label class="input-label" for="password-input">Password</label>
+
+          <!-- Wrapper holds input + eye toggle as a single visual unit -->
+          <div class="input-wrapper">
+
+            <input
+              class="password-input"
+              type="password"
+              id="password-input"
+              name="password"
+              placeholder="Enter your password…"
+              autocomplete="off"
+              spellcheck="false"
+              aria-describedby="password-hint"
+            />
+
+            <!--
+              Show/Hide toggle — type="button" prevents form submission.
+              aria-label and aria-pressed are updated by script.js.
+            -->
+            <button
+              class="toggle-visibility"
+              type="button"
+              id="toggle-visibility"
+              aria-label="Show password"
+              aria-pressed="false"
+              tabindex="0"
+            >
+              <!-- EYE OPEN (visible when password is hidden) -->
+              <svg class="eye-icon eye-open" xmlns="http://www.w3.org/2000/svg"
+                   viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                   stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                   width="18" height="18" aria-hidden="true">
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                <circle cx="12" cy="12" r="3"/>
+              </svg>
+              <!-- EYE CLOSED (visible when password is shown) -->
+              <svg class="eye-icon eye-closed" xmlns="http://www.w3.org/2000/svg"
+                   viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                   stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                   width="18" height="18" aria-hidden="true">
+                <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8
+                         a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4
+                         c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07
+                         a3 3 0 1 1-4.24-4.24"/>
+                <line x1="1" y1="1" x2="23" y2="23"/>
+              </svg>
+            </button>
+
+          </div><!-- /.input-wrapper -->
+
+          <!-- Generator Actions row (Generate & Copy) -->
+          <div class="generator-actions">
+            <button class="generator-btn" type="button" id="generate-pw-btn">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+                   stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                   stroke-linejoin="round" width="14" height="14" aria-hidden="true">
+                <path d="M21 2v6h-6M3 12a9 9 0 0 1 15-6.7L21 8M3 22v-6h6M21 12a9 9 0 0 1-15 6.7L3 16"/>
+              </svg>
+              Generate Secure Password
+            </button>
+            <button class="copy-pw-btn" type="button" id="copy-pw-btn">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+                   stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                   stroke-linejoin="round" width="14" height="14" aria-hidden="true">
+                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
+                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+              </svg>
+              Copy Password
+            </button>
+            <span class="copy-status-msg" id="copy-status-msg" hidden role="status">Copied!</span>
+          </div>
+
+          <p class="input-hint" id="password-hint">
+            A strong password uses 12+ characters, mixed case, numbers, and symbols.
+          </p>
+
+          <!-- Analyze button -->
+          <button class="analyze-btn" type="submit" id="analyze-btn">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+                 stroke="currentColor" stroke-width="2.5" stroke-linecap="round"
+                 stroke-linejoin="round" width="16" height="16" aria-hidden="true">
+              <circle cx="11" cy="11" r="8"/>
+              <path d="m21 21-4.35-4.35"/>
+            </svg>
+            Analyze Password
+          </button>
+
+        </form><!-- /#analyzer-form -->
+
+
+        <!-- ── Error display ──────────────────────────────────── -->
+        <p class="error-message" id="error-message" hidden role="alert"></p>
+
+
+        <!-- ── Results Area ───────────────────────────────────── -->
+        <!--
+          All result sections live inside #results-area.
+          It is revealed as one unit after a successful /analyze response.
+          Individual sections are always visible once the area is shown.
+          script.js injects content into the labelled output divs.
+        -->
+        <div class="results-area" id="results-area" hidden>
+
+          <hr class="divider" />
+
+          <!-- ── PASSWORD STRENGTH CARD (Placeholder) ─────────── -->
+          <!--
+            UI REDESIGN: Strength placeholder card.
+            Will be replaced with real data when entropy + scoring
+            modules are implemented. The card is always rendered;
+            its content is updated by script.js.
+          -->
+          <section class="strength-card" id="strength-card" aria-label="Password strength">
+            <div class="strength-card__left">
+              <p class="section-label">Strength</p>
+              <p class="strength-rating" id="strength-rating">Not Calculated Yet</p>
+            </div>
+            <div class="strength-card__right">
+              <!-- Five strength pips — filled by script.js via data attribute -->
+              <div class="strength-pips" id="strength-pips" data-level="0" aria-hidden="true">
+                <span class="pip"></span>
+                <span class="pip"></span>
+                <span class="pip"></span>
+                <span class="pip"></span>
+                <span class="pip"></span>
+              </div>
+              <p class="strength-score" id="strength-score">— / 100</p>
+            </div>
+          </section>
+
+
+          <!-- ── PASSWORD POLICY ANALYSIS ──────────────────────── -->
+          <!--
+            UI REDESIGN: Merges Module 2 (length) + Module 3 (diversity)
+            into one unified "Password Policy Analysis" section.
+            renderPolicyPanel() in script.js populates #policy-output.
+          -->
+          <section class="result-section" id="policy-section" aria-label="Password policy analysis">
+            <h2 class="section-label">Password Policy Analysis</h2>
+            <div class="policy-grid" id="policy-output"></div>
+          </section>
+
+
+          <!-- ── DICTIONARY ATTACK CHECK ────────────────────────── -->
+          <!--
+            MODULE 4: Dictionary Attack Detection.
+            renderDictionaryCheck() in script.js populates #dictionary-output.
+            The section displays whether the password was found in the
+            common password database used by real-world dictionary attacks.
+          -->
+          <section class="result-section" id="dictionary-section" aria-label="Dictionary attack check">
+            <h2 class="section-label">Dictionary Attack Check</h2>
+            <div id="dictionary-output" aria-live="polite">
+              <!-- Populated by renderDictionaryCheck() in script.js -->
+            </div>
+          </section>
+
+
+          <!-- ── PASSWORD ENTROPY ────────────────────────────────── -->
+          <!--
+            Password Entropy calculation results.
+            renderEntropy() in script.js populates #entropy-output.
+          -->
+          <section class="result-section" id="entropy-section" aria-label="Password entropy">
+            <h2 class="section-label">Password Entropy</h2>
+            <div id="entropy-output" aria-live="polite">
+              <!-- Populated by renderEntropy() in script.js -->
+            </div>
+          </section>
+
+
+          <!-- ── ESTIMATED BRUTE FORCE CRACK TIME ────────────────── -->
+          <!--
+            Estimated brute force crack time calculation results.
+            renderCrackTime() in script.js populates #crack-time-output.
+          -->
+          <section class="result-section" id="crack-time-section" aria-label="Estimated brute force crack time">
+            <h2 class="section-label">Estimated Brute Force Crack Time</h2>
+            <div id="crack-time-output" aria-live="polite">
+              <!-- Populated by renderCrackTime() in script.js -->
+            </div>
+          </section>
+
+
+          <!-- ── SUGGESTIONS ────────────────────────────────────── -->
+          <!--
+            UI REDESIGN: Suggestions placeholder.
+            script.js renders #suggestions-output when data is available.
+            When empty the section shows a friendly "all good" state.
+          -->
+          <section class="result-section" id="suggestions-section" aria-label="Improvement suggestions">
+            <h2 class="section-label">Suggestions</h2>
+            <ul class="suggestions-list" id="suggestions-output" aria-live="polite">
+              <!-- Populated by renderSuggestions() in script.js -->
+            </ul>
+          </section>
+
+        </div><!-- /#results-area -->
+
+      </main><!-- /.card -->
+
+    </div><!-- /.page-wrapper -->
+
+    <!--
+      script.js — loaded at end of <body> so the full DOM is available.
+      Handles: form submission, fetch() call, toggle, and response rendering.
+    -->
+    <script src="script.js"></script>
+
+  </body>
+</html>

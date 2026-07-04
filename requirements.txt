@@ -1,0 +1,55 @@
+# requirements.txt — Python Dependencies for Password Strength Analyzer
+# -----------------------------------------------------------------------
+# Responsibility:
+#   Lists all third-party Python packages required to run the backend.
+#   Install all dependencies with:
+#       pip install -r requirements.txt
+#
+# Versioning strategy:
+#   - Minimum versions are pinned (>=) rather than exact (==) to allow
+#     compatible patch-level upgrades without breaking changes.
+#   - For production deployment, pin to exact versions and generate a
+#     lock file (e.g., pip freeze > requirements.lock).
+#
+# Sections:
+#   1. Web Framework
+#   2. Password Security
+#   3. Development & Testing (not required in production)
+# -----------------------------------------------------------------------
+
+
+# ============================================================
+# 1. WEB FRAMEWORK
+# ============================================================
+
+# Flask — Lightweight WSGI web framework used to serve the API and frontend.
+# Docs: https://flask.palletsprojects.com/
+flask>=3.0.0
+
+# Flask-CORS — Adds Cross-Origin Resource Sharing (CORS) headers to Flask
+# responses. Required when the frontend is served from a different origin
+# than the backend API (e.g., during local development with a dev server).
+# TODO: Enable and configure in app.py in a future step.
+# Docs: https://flask-cors.readthedocs.io/
+flask-cors>=4.0.0
+
+
+# ============================================================
+# 2. PASSWORD SECURITY
+# ============================================================
+
+# bcrypt — Industry-standard password hashing library.
+# Used by password_storage.py to hash passwords before any storage.
+# Docs: https://pypi.org/project/bcrypt/
+# TODO: Integrate in password_storage.py in a future step.
+bcrypt>=4.1.0
+
+
+# ============================================================
+# 3. DEVELOPMENT & TESTING
+# ============================================================
+
+# pytest — Testing framework used to write and run unit tests.
+# Docs: https://docs.pytest.org/
+# TODO: Add unit tests for analyzer.py, entropy.py, etc. in a future step.
+pytest>=8.0.0
